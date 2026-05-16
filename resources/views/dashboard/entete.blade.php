@@ -148,21 +148,39 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('dashboard.utilisateurs') }}" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
-                                <i class="fas fa-users w-5 mr-3 sidebar-icon"></i>
-                                <span>Utilisateurs</span>
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ route('dashboard.roles') }}" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
                                 <i class="fas fa-shield-alt w-5 mr-3 sidebar-icon"></i>
                                 <span>Rôles</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                            <a href="{{ route('dashboard.utilisateurs') }}" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                                <i class="fas fa-users w-5 mr-3 sidebar-icon"></i>
+                                <span>Utilisateurs</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                                <i class="fas fa-file w-5 mr-3 sidebar-icon"></i>
+                                <span>Permis d'exploitation</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                                <i class="fas fa-map-marker-alt w-5 mr-3 sidebar-icon"></i>
+                                <span>Sites miniers</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('dashboard.mines') }}" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
                                 <i class="fas fa-gem w-5 mr-3 sidebar-icon"></i>
                                 <span>Mines</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                                <i class="fas fa-shopping-cart w-5 mr-3 sidebar-icon"></i>
+                                <span>Ventes de minerais</span>
                             </a>
                         </li>
                         <li>

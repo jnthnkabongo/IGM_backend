@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Minerai;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -185,5 +186,61 @@ class DashboardController extends Controller
         return redirect()->route('dashboard.roles')->with('success', 'Role supprimé avec succès !');
     }
 
+    ///*** CRUD des mines */
+    public function mines()
+    {
+        $mines = Minerai::paginate(10);
+        return view('dashboard.mines', compact('mines'));
+    }
+    /// Sauvegarde mine
+    public function saveMine(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'unite' => 'required|string|max:255',
+            'prix_reference' => 'required|numeric',
+        ]);
 
+        $code = 'MIN-' . \Illuminate\Support\Str::random(20);
+
+        Minerai::create([
+            'code' => $code,
+            'nom' => $request->nom,
+            'unite' => $request->unite,
+            'prix_reference' => $request->prix_reference,
+        ]);
+
+        return redirect()->route('dashboard.mines')->with('success', 'Mine créée avec succès !');
+    }
+    /// Modification mine
+    public function editMine($id)
+    {
+        $mine = Minerai::find($id);
+        return view('dashboard.edit-mine', compact('mine'));
+    }
+    /// Sauvegarde mine
+    public function updateMine(Request $request, $id)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'unite' => 'required|string|max:255',
+            'prix_reference' => 'required|numeric',
+        ]);
+
+        $mine = Minerai::find($id);
+        $mine->update([
+            'nom' => $request->nom,
+            'unite' => $request->unite,
+            'prix_reference' => $request->prix_reference,
+        ]);
+
+        return redirect()->route('dashboard.mines')->with('success', 'Mine mise à jour avec succès !');
+    }
+    /// Suppression mine
+    public function deleteMine($id)
+    {
+        $mine = Minerai::find($id);
+        $mine->delete();
+        return redirect()->route('dashboard.mines')->with('success', 'Mine supprimée avec succès !');
+    }
 }
