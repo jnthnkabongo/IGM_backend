@@ -67,7 +67,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-2">
-                                <span class="text-gray-700 font-medium">{{ number_format($mine->prix_reference, 2) }}</span>
+                                <span class="text-gray-700 font-medium">{{ number_format($mine->prix_reference, 2) }} Fc</span>
                             </td>
                             <td class="px-4 py-2">
                                 @if($mine->siteMinier)

@@ -215,6 +215,7 @@ class DashboardController extends Controller
             'unite' => $request->unite,
             'prix_reference' => $request->prix_reference,
             'site_minier_id' => $request->site_minier_id,
+            'etat_minerai' => 'En_cours'
         ]);
 
         return redirect()->route('dashboard.mines')->with('success', 'Mine créée avec succès !');
@@ -233,6 +234,7 @@ class DashboardController extends Controller
             'unite' => 'required|string|max:255',
             'prix_reference' => 'required|numeric',
             'site_minier_id' => 'required|exists:sites_miniers,id',
+            'etat_minerai' => 'required|string|max:255',
         ]);
 
         $mine = Minerai::find($id);
@@ -241,6 +243,7 @@ class DashboardController extends Controller
             'unite' => $request->unite,
             'prix_reference' => $request->prix_reference,
             'site_minier_id' => $request->site_minier_id,
+            'etat_minerai' => $request->etat_minerai
         ]);
 
         return redirect()->route('dashboard.mines')->with('success', 'Mine mise à jour avec succès !');
