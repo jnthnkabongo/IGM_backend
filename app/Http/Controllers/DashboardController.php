@@ -341,4 +341,59 @@ class DashboardController extends Controller
         $concessions = Concession::all();
         return view('dashboard.concession', compact('concessions'));
     }
+    /// Sauvegarde concession
+    public function saveConcession(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'numero_cadastre' => 'required|string|max:255',
+            'superficie' => 'required|numeric',
+            'proprietaire' => 'required|string|max:255',
+        ]);
+
+        $code = 'CONC-' . \Illuminate\Support\Str::random(20);
+
+        Concession::create([
+            'code' => $code,
+            'nom' => $request->nom,
+            'numero_cadastre' => $request->numero_cadastre,
+            'superficie' => $request->superficie,
+            'proprietaire' => $request->proprietaire,
+        ]);
+
+        return redirect()->route('dashboard.concessions')->with('success', 'Concession créée avec succès !');
+    }
+    /// Modification concession
+    public function editConcession($id)
+    {
+        $concession = Concession::find($id);
+        return view('dashboard.edit-concession', compact('concession'));
+    }
+    /// Sauvegarde concession
+    public function updateConcession(Request $request, $id)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'numero_cadastre' => 'required|string|max:255',
+            'superficie' => 'required|numeric',
+            'proprietaire' => 'required|string|max:255',
+        ]);
+
+        $concession = Concession::find($id);
+        $concession->update([
+            'nom' => $request->nom,
+            'numero_cadastre' => $request->numero_cadastre,
+            'superficie' => $request->superficie,
+            'proprietaire' => $request->proprietaire,
+        ]);
+
+        return redirect()->route('dashboard.concessions')->with('success', 'Concession mise à jour avec succès !');
+    }
+    /// Suppression concession
+    public function deleteConcession($id)
+    {
+        $concession = Concession::find($id);
+        $concession->delete();
+        return redirect()->route('dashboard.concessions')->with('success', 'Concession supprimée avec succès !');
+    }
 }

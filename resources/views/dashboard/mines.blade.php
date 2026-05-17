@@ -38,10 +38,12 @@
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">ID</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Code</th>
+                            <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">QR Code</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Unité</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Prix référence</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Site</th>
+                            <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">État</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -57,6 +59,9 @@
                             </td>
                             <td class="px-4 py-2">
                                 <span class="text-gray-700 font-medium font-mono text-sm">{{ $mine->code }}</span>
+                            </td>
+                            <td class="px-4 py-2">
+                                <img src="{{ $mine->qr_code }}" alt="QR Code" class="w-10 h-10">
                             </td>
                             <td class="px-4 py-2">
                                 <span class="text-gray-700 font-medium">{{ $mine->nom }}</span>
@@ -79,6 +84,11 @@
                                     Non assigné
                                 </span>
                                 @endif
+                            </td>
+                            <td class="px-4 py-2">
+                                <span class="px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-{{ $mine->etat_minerai == 'En_cours' ? 'blue' : 'red' }}-500 to-{{ $mine->etat_minerai == 'En_cours' ? 'blue' : 'red' }}-600 text-white shadow-sm">
+                                    {{ $mine->etat_minerai }}
+                                </span>
                             </td>
                             <td class="px-4 py-2">
                                 <div class="flex items-center space-x-3">
