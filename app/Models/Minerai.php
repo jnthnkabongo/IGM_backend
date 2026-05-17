@@ -14,7 +14,13 @@ class Minerai extends Model
         'nom',
         'unite',
         'prix_reference',
+        'site_minier_id',
     ];
+
+    public function siteMinier()
+    {
+        return $this->belongsTo(SiteMinier::class, 'site_minier_id');
+    }
 
     public function productions()
     {

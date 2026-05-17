@@ -9,6 +9,8 @@ class SiteMinier extends Model
 {
     use HasFactory;
 
+    protected $table = 'sites_miniers';
+
     protected $fillable = [
         'concession_id',
         'code',

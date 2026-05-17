@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Minerai;
 use App\Models\Role;
+use App\Models\SiteMinier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -67,6 +68,7 @@ class DashboardController extends Controller
 
         return back()->with('success', 'Profil mis à jour avec succès !');
     }
+
 
     /*** CRUD utilisateurs */
     public function utilisateurs()
@@ -186,11 +188,13 @@ class DashboardController extends Controller
         return redirect()->route('dashboard.roles')->with('success', 'Role supprimé avec succès !');
     }
 
+
     ///*** CRUD des mines */
     public function mines()
     {
-        $mines = Minerai::paginate(10);
-        return view('dashboard.mines', compact('mines'));
+        $mines = Minerai::with('siteMinier')->paginate(10);
+        $sites = SiteMinier::all();
+        return view('dashboard.mines', compact('mines', 'sites'));
     }
     /// Sauvegarde mine
     public function saveMine(Request $request)
@@ -199,6 +203,7 @@ class DashboardController extends Controller
             'nom' => 'required|string|max:255',
             'unite' => 'required|string|max:255',
             'prix_reference' => 'required|numeric',
+            'site_minier_id' => 'required|exists:sites_miniers,id',
         ]);
 
         $code = 'MIN-' . \Illuminate\Support\Str::random(20);
@@ -208,6 +213,7 @@ class DashboardController extends Controller
             'nom' => $request->nom,
             'unite' => $request->unite,
             'prix_reference' => $request->prix_reference,
+            'site_minier_id' => $request->site_minier_id,
         ]);
 
         return redirect()->route('dashboard.mines')->with('success', 'Mine créée avec succès !');
@@ -225,6 +231,7 @@ class DashboardController extends Controller
             'nom' => 'required|string|max:255',
             'unite' => 'required|string|max:255',
             'prix_reference' => 'required|numeric',
+            'site_minier_id' => 'required|exists:sites_miniers,id',
         ]);
 
         $mine = Minerai::find($id);
@@ -232,6 +239,7 @@ class DashboardController extends Controller
             'nom' => $request->nom,
             'unite' => $request->unite,
             'prix_reference' => $request->prix_reference,
+            'site_minier_id' => $request->site_minier_id,
         ]);
 
         return redirect()->route('dashboard.mines')->with('success', 'Mine mise à jour avec succès !');
@@ -242,5 +250,78 @@ class DashboardController extends Controller
         $mine = Minerai::find($id);
         $mine->delete();
         return redirect()->route('dashboard.mines')->with('success', 'Mine supprimée avec succès !');
+    }
+
+
+    ///*** CRUD des sites */
+    public function sites()
+    {
+        $sites = SiteMinier::with('responsable')->paginate(10);
+        $users = User::all();
+        return view('dashboard.site', compact('sites', 'users'));
+    }
+    /// Sauvegarde site
+    public function saveSite(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'province' => 'required|string|max:255',
+            'territoire' => 'required|string|max:255',
+            'latitude' => 'required|string|max:255',
+            'longitude' => 'required|string|max:255',
+            'responsable_id' => 'required|exists:users,id',
+        ]);
+
+        $code = 'SITE-' . \Illuminate\Support\Str::random(20);
+
+        SiteMinier::create([
+            'code' => $code,
+            'nom' => $request->nom,
+            'province' => $request->province,
+            'territoire' => $request->territoire,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'responsable_id' => $request->responsable_id,
+        ]);
+
+        return redirect()->route('dashboard.sites')->with('success', 'Site créé avec succès !');
+    }
+    /// Modification site
+    public function editSite($id)
+    {
+        $site = SiteMinier::find($id);
+        $users = User::all();
+        return view('dashboard.edit-site', compact('site', 'users'));
+    }
+    /// Sauvegarde site
+    public function updateSite(Request $request, $id)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'province' => 'required|string|max:255',
+            'territoire' => 'required|string|max:255',
+            'latitude' => 'required|string|max:255',
+            'longitude' => 'required|string|max:255',
+            'responsable_id' => 'required|exists:users,id',
+        ]);
+
+        $site = SiteMinier::find($id);
+        $site->update([
+            'nom' => $request->nom,
+            'province' => $request->province,
+            'territoire' => $request->territoire,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'responsable_id' => $request->responsable_id,
+        ]);
+
+        return redirect()->route('dashboard.sites')->with('success', 'Site mis à jour avec succès !');
+    }
+    /// Suppression site
+    public function deleteSite($id)
+    {
+        $site = SiteMinier::find($id);
+        $site->delete();
+        return redirect()->route('dashboard.sites')->with('success', 'Site supprimé avec succès !');
     }
 }

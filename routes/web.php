@@ -40,6 +40,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/mine/{id}', [DashboardController::class, 'updateMine'])->name('dashboard.updateMine');
     Route::delete('/mine/{id}', [DashboardController::class, 'deleteMine'])->name('dashboard.deleteMine');
     
+    Route::get('/sites', [DashboardController::class, 'sites'])->name('dashboard.sites');
+    Route::get('/site/create', [DashboardController::class, 'createSite'])->name('dashboard.site.create');
+    Route::post('/site', [DashboardController::class, 'saveSite'])->name('dashboard.saveSite');
+    Route::get('/site/{id}/edit', [DashboardController::class, 'editSite'])->name('dashboard.site.edit');
+    Route::put('/site/{id}', [DashboardController::class, 'updateSite'])->name('dashboard.updateSite');
+    Route::delete('/site/{id}', [DashboardController::class, 'deleteSite'])->name('dashboard.deleteSite');
+    
     Route::get('/profile', [DashboardController::class, 'profile'])->name('dashboard.profile');
     Route::put('/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
 });
