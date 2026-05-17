@@ -13,14 +13,23 @@
             </button>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="p-4 border-b border-gray-200">
-                <div class="flex gap-4 items-center">
-                    <div class="relative flex-1">
-                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" placeholder="Rechercher une concession..." class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                    </div>
+         <!-- Barre de recherche -->
+        <div class="bg-white rounded-xl shadow-lg p-2">
+            <div class="flex items-center gap-4">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="Rechercher un role..." class="w-full pl-12 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                 </div>
+                <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Rechercher</button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i class="fas fa-map"></i>
+                    Liste des concessions minieres
+                </h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -28,6 +37,7 @@
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">ID</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Code</th>
+                            <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">QR Code</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Numéro cadastre</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Superficie</th>
@@ -40,7 +50,7 @@
                         <tr class="hover:bg-blue-50 transition-all duration-200">
                             <td class="px-4 py-2">
                                 <div class="flex items-center">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mr-4 shadow-md">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-4 shadow-md">
                                         <span class="text-white font-bold text-lg">{{ $concession->id }}</span>
                                     </div>
                                 </div>
@@ -49,13 +59,16 @@
                                 <span class="text-gray-700 font-medium font-mono text-sm">{{ $concession->code }}</span>
                             </td>
                             <td class="px-4 py-2">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $concession->code }}" alt="QR Code" class="w-10 h-10 cursor-pointer" onclick="window.open(this.src, '_blank')">
+                            </td>
+                            <td class="px-4 py-2">
                                 <span class="text-gray-700 font-medium">{{ $concession->nom }}</span>
                             </td>
                             <td class="px-4 py-2">
                                 <span class="text-gray-700 font-medium">{{ $concession->numero_cadastre }}</span>
                             </td>
                             <td class="px-4 py-2">
-                                <span class="px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-sm">
+                                <span class="px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm">
                                     {{ $concession->superficie }} ha
                                 </span>
                             </td>

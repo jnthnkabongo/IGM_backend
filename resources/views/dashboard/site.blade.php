@@ -38,6 +38,7 @@
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">ID</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Code</th>
+                            <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">QR Code</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Province</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Territoire</th>
@@ -57,6 +58,9 @@
                             </td>
                             <td class="px-4 py-2">
                                 <span class="text-gray-700 font-medium font-mono text-sm">{{ $site->code }}</span>
+                            </td>
+                            <td class="px-4 py-2">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $site->code }}" alt="QR Code" class="w-10 h-10 cursor-pointer" onclick="window.open(this.src, '_blank')">
                             </td>
                             <td class="px-4 py-2">
                                 <span class="text-gray-700 font-medium">{{ $site->nom }}</span>

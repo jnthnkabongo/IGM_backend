@@ -61,7 +61,7 @@
                                 <span class="text-gray-700 font-medium font-mono text-sm">{{ $mine->code }}</span>
                             </td>
                             <td class="px-4 py-2">
-                                <img src="{{ $mine->qr_code }}" alt="QR Code" class="w-10 h-10">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $mine->code }}" alt="QR Code" class="w-10 h-10 cursor-pointer" onclick="window.open(this.src, '_blank')">
                             </td>
                             <td class="px-4 py-2">
                                 <span class="text-gray-700 font-medium">{{ $mine->nom }}</span>
