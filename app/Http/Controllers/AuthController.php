@@ -6,12 +6,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\LogsActivite;
 
 class AuthController extends Controller
 {
     /**
      * Afficher la page de connexion
      */
+    public function activity(){
+
+    }
+
+    /**
+     * Enregistrer l'activité de l'utilisateur
+     */
+    protected function logActivity($action, $tableConcernee, $referenceId)
+    {
+        if (Auth::check()) {
+            LogsActivite::create([
+                'user_id' => Auth::id(),
+                'action' => $action,
+                'table_concernee' => $tableConcernee,
+                'reference_id' => $referenceId,
+            ]);
+        }
+    }
+
     public function showLoginForm()
     {
         // User::create([

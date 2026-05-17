@@ -226,6 +226,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                                <i class="fas fa-history w-5 mr-3 sidebar-icon"></i>
+                                <span>Activité</span>
+                            </a>
+                        </li>
+                        <li>
                             <form action="{{ route('logout') }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="sidebar-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:text-red-600 text-left">

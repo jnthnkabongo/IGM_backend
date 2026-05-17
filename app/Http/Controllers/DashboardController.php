@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Concession;
+use App\Models\LogsActivite;
 use App\Models\Minerai;
 use App\Models\Role;
 use App\Models\SiteMinier;
@@ -16,6 +17,21 @@ class DashboardController extends Controller
      * Créer une nouvelle instance du contrôleur
      */
     // public function __construct()
+
+    /**
+     * Enregistrer l'activité de l'utilisateur
+     */
+    protected function logActivity($action, $tableConcernee, $referenceId)
+    {
+        if (Auth::check()) {
+            LogsActivite::create([
+                'user_id' => Auth::id(),
+                'action' => $action,
+                'table_concernee' => $tableConcernee,
+                'reference_id' => $referenceId,
+            ]);
+        }
+    }
     // {
     //     $this->middleware('auth');
     // }
@@ -93,12 +109,14 @@ class DashboardController extends Controller
             'role_id' => 'required|exists:roles,id',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role_id' => $request->role_id,
         ]);
+
+        $this->logActivity('Création utilisateur', 'users', $user->id);
 
         return redirect()->route('dashboard.utilisateurs')->with('success', 'Utilisateur créé avec succès !');
     }
@@ -126,13 +144,17 @@ class DashboardController extends Controller
             'password' => $request->password ? bcrypt($request->password) : $user->password,
         ]);
 
+        $this->logActivity('Modification utilisateur', 'users', $user->id);
+
         return redirect()->route('dashboard.utilisateurs')->with('success', 'Utilisateur mis à jour avec succès !');
     }
     //*** Suppression utilisateur ***//
     public function deleteUtilisateur($id)
     {
         $user = User::find($id);
+        $userId = $user->id;
         $user->delete();
+        $this->logActivity('Suppression utilisateur', 'users', $userId);
         return redirect()->route('dashboard.utilisateurs')->with('success', 'Utilisateur supprimé avec succès !');
     }
 
@@ -155,9 +177,11 @@ class DashboardController extends Controller
             'nom' => 'required|string|max:255',
         ]);
 
-        Role::create([
+        $role = Role::create([
             'nom' => $request->nom,
         ]);
+
+        $this->logActivity('Création role', 'roles', $role->id);
 
         return redirect()->route('dashboard.roles')->with('success', 'Role créé avec succès !');
     }
@@ -179,13 +203,17 @@ class DashboardController extends Controller
             'nom' => $request->nom,
         ]);
 
+        $this->logActivity('Modification role', 'roles', $role->id);
+
         return redirect()->route('dashboard.roles')->with('success', 'Role mis à jour avec succès !');
     }
     ///*** Suppression role ***//
     public function deleteRole($id)
     {
         $role = Role::find($id);
+        $roleId = $role->id;
         $role->delete();
+        $this->logActivity('Suppression role', 'roles', $roleId);
         return redirect()->route('dashboard.roles')->with('success', 'Role supprimé avec succès !');
     }
 
@@ -209,7 +237,7 @@ class DashboardController extends Controller
 
         $code = 'MIN-' . \Illuminate\Support\Str::random(20);
 
-        Minerai::create([
+        $mine = Minerai::create([
             'code' => $code,
             'nom' => $request->nom,
             'unite' => $request->unite,
@@ -217,6 +245,8 @@ class DashboardController extends Controller
             'site_minier_id' => $request->site_minier_id,
             'etat_minerai' => 'En_cours'
         ]);
+
+        $this->logActivity('Création minerai', 'minerais', $mine->id);
 
         return redirect()->route('dashboard.mines')->with('success', 'Mine créée avec succès !');
     }
@@ -246,13 +276,17 @@ class DashboardController extends Controller
             'etat_minerai' => $request->etat_minerai
         ]);
 
+        $this->logActivity('Modification minerai', 'minerais', $mine->id);
+
         return redirect()->route('dashboard.mines')->with('success', 'Mine mise à jour avec succès !');
     }
     /// Suppression mine
     public function deleteMine($id)
     {
         $mine = Minerai::find($id);
+        $mineId = $mine->id;
         $mine->delete();
+        $this->logActivity('Suppression minerai', 'minerais', $mineId);
         return redirect()->route('dashboard.mines')->with('success', 'Mine supprimée avec succès !');
     }
 
