@@ -41,6 +41,7 @@
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Unité</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Prix référence</th>
+                            <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Site</th>
                             <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -69,8 +70,19 @@
                                 <span class="text-gray-700 font-medium">{{ number_format($mine->prix_reference, 2) }}</span>
                             </td>
                             <td class="px-4 py-2">
+                                @if($mine->siteMinier)
+                                <span class="px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white shadow-sm">
+                                    {{ $mine->siteMinier->nom }}
+                                </span>
+                                @else
+                                <span class="px-4 py-2 rounded-full text-xs font-bold bg-gray-200 text-gray-700 shadow-sm">
+                                    Non assigné
+                                </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2">
                                 <div class="flex items-center space-x-3">
-                                    <button onclick="openEditModal({{ $mine->id }}, '{{ $mine->nom }}', '{{ $mine->unite }}', {{ $mine->prix_reference }})" class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm" title="Modifier">
+                                    <button onclick="openEditModal({{ $mine->id }}, '{{ $mine->nom }}', '{{ $mine->unite }}', {{ $mine->prix_reference }}, {{ $mine->site_minier_id ?? 'null' }})" class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm" title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button onclick="openDeleteModal({{ $mine->id }}, '{{ $mine->nom }}')" class="w-9 h-9 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm" title="Supprimer">
@@ -81,7 +93,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center">
+                            <td colspan="7" class="px-4 py-8 text-center">
                                 <div class="flex flex-col items-center">
                                     <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                         <i class="fas fa-gem text-4xl text-gray-400"></i>
@@ -122,6 +134,15 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Prix référence</label>
                         <input type="number" step="0.01" name="prix_reference" id="minePrix" placeholder="Prix de référence" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkForm()">
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Site</label>
+                        <select name="site_minier_id" id="mineSiteId" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkForm()">
+                            <option value="">Sélectionner un site</option>
+                            @foreach($sites ?? [] as $site)
+                            <option value="{{ $site->id }}">{{ $site->nom }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors">
@@ -160,6 +181,15 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Prix référence</label>
                         <input type="number" step="0.01" name="prix_reference" id="editMinePrix" placeholder="Prix de référence" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkEditForm()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Site</label>
+                        <select name="site_minier_id" id="editMineSiteId" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkEditForm()">
+                            <option value="">Sélectionner un site</option>
+                            @foreach($sites ?? [] as $site)
+                            <option value="{{ $site->id }}">{{ $site->nom }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
@@ -220,6 +250,7 @@
             document.getElementById('mineNom').value = '';
             document.getElementById('mineUnite').value = '';
             document.getElementById('minePrix').value = '';
+            document.getElementById('mineSiteId').value = '';
             checkForm();
         }
 
@@ -227,9 +258,10 @@
             const nom = document.getElementById('mineNom').value.trim();
             const unite = document.getElementById('mineUnite').value.trim();
             const prix = document.getElementById('minePrix').value.trim();
+            const siteId = document.getElementById('mineSiteId').value;
             const saveBtn = document.getElementById('saveMineBtn');
 
-            if (nom && unite && prix) {
+            if (nom && unite && prix && siteId) {
                 saveBtn.disabled = false;
             } else {
                 saveBtn.disabled = true;
@@ -243,11 +275,12 @@
             }
         });
 
-        function openEditModal(id, nom, unite, prix) {
+        function openEditModal(id, nom, unite, prix, siteId) {
             document.getElementById('editMineId').value = id;
             document.getElementById('editMineNom').value = nom;
             document.getElementById('editMineUnite').value = unite;
             document.getElementById('editMinePrix').value = prix;
+            document.getElementById('editMineSiteId').value = siteId || '';
             document.getElementById('editMineForm').action = "{{ route('dashboard.updateMine', ':id') }}".replace(':id', id);
             document.getElementById('editMineModal').classList.remove('hidden');
             document.getElementById('editMineModal').classList.add('flex');
@@ -262,6 +295,7 @@
             document.getElementById('editMineNom').value = '';
             document.getElementById('editMineUnite').value = '';
             document.getElementById('editMinePrix').value = '';
+            document.getElementById('editMineSiteId').value = '';
             checkEditForm();
         }
 
@@ -269,9 +303,10 @@
             const nom = document.getElementById('editMineNom').value.trim();
             const unite = document.getElementById('editMineUnite').value.trim();
             const prix = document.getElementById('editMinePrix').value.trim();
+            const siteId = document.getElementById('editMineSiteId').value;
             const updateBtn = document.getElementById('updateMineBtn');
 
-            if (nom && unite && prix) {
+            if (nom && unite && prix && siteId) {
                 updateBtn.disabled = false;
             } else {
                 updateBtn.disabled = true;

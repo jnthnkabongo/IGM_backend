@@ -166,6 +166,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{route('dashboard.concessions')}}" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                                <i class="fas fa-map w-5 mr-3 sidebar-icon"></i>
+                                <span>Concession</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('dashboard.sites') }}" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
                                 <i class="fas fa-map-marker-alt w-5 mr-3 sidebar-icon"></i>
                                 <span>Sites miniers</span>

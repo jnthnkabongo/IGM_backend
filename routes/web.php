@@ -40,6 +40,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/mine/{id}', [DashboardController::class, 'updateMine'])->name('dashboard.updateMine');
     Route::delete('/mine/{id}', [DashboardController::class, 'deleteMine'])->name('dashboard.deleteMine');
     
+    Route::get('/concessions', [DashboardController::class, 'concessions'])->name('dashboard.concessions');
+    //Route::get('/concession/create', [DashboardController::class, 'createConcession'])->name('dashboard.concession.create');
+    Route::post('/concession', [DashboardController::class, 'saveConcession'])->name('dashboard.saveConcession');
+    Route::get('/concession/{id}/edit', [DashboardController::class, 'editConcession'])->name('dashboard.concession.edit');
+    Route::put('/concession/{id}', [DashboardController::class, 'updateConcession'])->name('dashboard.updateConcession');
+    Route::delete('/concession/{id}', [DashboardController::class, 'deleteConcession'])->name('dashboard.deleteConcession');
+    
     Route::get('/sites', [DashboardController::class, 'sites'])->name('dashboard.sites');
     Route::get('/site/create', [DashboardController::class, 'createSite'])->name('dashboard.site.create');
     Route::post('/site', [DashboardController::class, 'saveSite'])->name('dashboard.saveSite');

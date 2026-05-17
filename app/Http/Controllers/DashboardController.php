@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concession;
 use App\Models\Minerai;
 use App\Models\Role;
 use App\Models\SiteMinier;
@@ -258,7 +259,8 @@ class DashboardController extends Controller
     {
         $sites = SiteMinier::with('responsable')->paginate(10);
         $users = User::all();
-        return view('dashboard.site', compact('sites', 'users'));
+        $concessions = Concession::all();
+        return view('dashboard.site', compact('sites', 'users', 'concessions'));
     }
     /// Sauvegarde site
     public function saveSite(Request $request)
@@ -269,6 +271,7 @@ class DashboardController extends Controller
             'territoire' => 'required|string|max:255',
             'latitude' => 'required|string|max:255',
             'longitude' => 'required|string|max:255',
+            'concession_id' => 'required|exists:concessions,id',
             'responsable_id' => 'required|exists:users,id',
         ]);
 
@@ -281,6 +284,7 @@ class DashboardController extends Controller
             'territoire' => $request->territoire,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
+            'concession_id' => $request->concession_id,
             'responsable_id' => $request->responsable_id,
         ]);
 
@@ -291,7 +295,8 @@ class DashboardController extends Controller
     {
         $site = SiteMinier::find($id);
         $users = User::all();
-        return view('dashboard.edit-site', compact('site', 'users'));
+        $concessions = Concession::all();
+        return view('dashboard.edit-site', compact('site', 'users', 'concessions'));
     }
     /// Sauvegarde site
     public function updateSite(Request $request, $id)
@@ -302,6 +307,7 @@ class DashboardController extends Controller
             'territoire' => 'required|string|max:255',
             'latitude' => 'required|string|max:255',
             'longitude' => 'required|string|max:255',
+            'concession_id' => 'required|exists:concessions,id',
             'responsable_id' => 'required|exists:users,id',
         ]);
 
@@ -312,6 +318,7 @@ class DashboardController extends Controller
             'territoire' => $request->territoire,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
+            'concession_id' => $request->concession_id,
             'responsable_id' => $request->responsable_id,
         ]);
 
@@ -323,5 +330,12 @@ class DashboardController extends Controller
         $site = SiteMinier::find($id);
         $site->delete();
         return redirect()->route('dashboard.sites')->with('success', 'Site supprimé avec succès !');
+    }
+
+    ///*** CRUD concessions */
+    public function concessions()
+    {
+        $concessions = Concession::all();
+        return view('dashboard.concession', compact('concessions'));
     }
 }

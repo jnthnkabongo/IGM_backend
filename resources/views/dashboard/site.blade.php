@@ -80,7 +80,7 @@
                             </td>
                             <td class="px-4 py-2">
                                 <div class="flex items-center space-x-3">
-                                    <button onclick="openEditModal({{ $site->id }}, '{{ $site->nom }}', '{{ $site->province }}', '{{ $site->territoire }}', {{ $site->responsable_id ?? 'null' }})" class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm" title="Modifier">
+                                    <button onclick="openEditModal({{ $site->id }}, '{{ $site->nom }}', '{{ $site->province }}', '{{ $site->territoire }}', '{{ $site->latitude ?? '' }}', '{{ $site->longitude ?? '' }}', {{ $site->concession_id ?? 'null' }}, {{ $site->responsable_id ?? 'null' }})" class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm" title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button onclick="openDeleteModal({{ $site->id }}, '{{ $site->nom }}')" class="w-9 h-9 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm" title="Supprimer">
@@ -141,6 +141,15 @@
                         <input type="text" name="longitude" id="siteLongitude" placeholder="Longitude" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkForm()">
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Concession</label>
+                        <select name="concession_id" id="siteConcessionId" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkForm()">
+                            <option value="">Sélectionner une concession</option>
+                            @foreach($concessions ?? [] as $concession)
+                            <option value="{{ $concession->id }}">{{ $concession->nom }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Responsable</label>
                         <select name="responsable_id" id="siteResponsableId" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkForm()">
                             <option value="">Sélectionner un responsable</option>
@@ -195,6 +204,15 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
                         <input type="text" name="longitude" id="editSiteLongitude" placeholder="Longitude" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkEditForm()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Concession</label>
+                        <select name="concession_id" id="editSiteConcessionId" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" oninput="checkEditForm()">
+                            <option value="">Sélectionner une concession</option>
+                            @foreach($concessions ?? [] as $concession)
+                            <option value="{{ $concession->id }}">{{ $concession->nom }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Responsable</label>
@@ -266,6 +284,7 @@
             document.getElementById('siteTerritoire').value = '';
             document.getElementById('siteLatitude').value = '';
             document.getElementById('siteLongitude').value = '';
+            document.getElementById('siteConcessionId').value = '';
             document.getElementById('siteResponsableId').value = '';
             checkForm();
         }
@@ -276,10 +295,11 @@
             const territoire = document.getElementById('siteTerritoire').value.trim();
             const latitude = document.getElementById('siteLatitude').value.trim();
             const longitude = document.getElementById('siteLongitude').value.trim();
+            const concessionId = document.getElementById('siteConcessionId').value;
             const responsableId = document.getElementById('siteResponsableId').value;
             const saveBtn = document.getElementById('saveSiteBtn');
 
-            if (nom && province && territoire && latitude && longitude && responsableId) {
+            if (nom && province && territoire && latitude && longitude && concessionId && responsableId) {
                 saveBtn.disabled = false;
             } else {
                 saveBtn.disabled = true;
@@ -293,11 +313,14 @@
             }
         });
 
-        function openEditModal(id, nom, province, territoire, responsableId) {
+        function openEditModal(id, nom, province, territoire, latitude, longitude, concessionId, responsableId) {
             document.getElementById('editSiteId').value = id;
             document.getElementById('editSiteNom').value = nom;
             document.getElementById('editSiteProvince').value = province;
             document.getElementById('editSiteTerritoire').value = territoire;
+            document.getElementById('editSiteLatitude').value = latitude || '';
+            document.getElementById('editSiteLongitude').value = longitude || '';
+            document.getElementById('editSiteConcessionId').value = concessionId || '';
             document.getElementById('editSiteResponsableId').value = responsableId || '';
             document.getElementById('editSiteForm').action = "{{ route('dashboard.updateSite', ':id') }}".replace(':id', id);
             document.getElementById('editSiteModal').classList.remove('hidden');
@@ -315,6 +338,7 @@
             document.getElementById('editSiteTerritoire').value = '';
             document.getElementById('editSiteLatitude').value = '';
             document.getElementById('editSiteLongitude').value = '';
+            document.getElementById('editSiteConcessionId').value = '';
             document.getElementById('editSiteResponsableId').value = '';
             checkEditForm();
         }
@@ -325,10 +349,11 @@
             const territoire = document.getElementById('editSiteTerritoire').value.trim();
             const latitude = document.getElementById('editSiteLatitude').value.trim();
             const longitude = document.getElementById('editSiteLongitude').value.trim();
+            const concessionId = document.getElementById('editSiteConcessionId').value;
             const responsableId = document.getElementById('editSiteResponsableId').value;
             const updateBtn = document.getElementById('updateSiteBtn');
 
-            if (nom && province && territoire && latitude && longitude && responsableId) {
+            if (nom && province && territoire && latitude && longitude && concessionId && responsableId) {
                 updateBtn.disabled = false;
             } else {
                 updateBtn.disabled = true;
