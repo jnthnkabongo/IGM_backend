@@ -163,13 +163,11 @@ class DashboardController extends Controller
     public function roles()
     {
         $roles = Role::paginate(10);
+
+        $this->logActivity('Consultation liste roles', 'roles', $roles->first()?->id);
         return view('dashboard.roles', compact('roles'));
     }
-    ///*** Creation role ***//
-    public function createRole()
-    {
-        return view('dashboard.create-role');
-    }
+    
     ///*** Sauvegarde role ***//
     public function saveRole(Request $request)
     {
@@ -189,6 +187,8 @@ class DashboardController extends Controller
     public function editRole($id)
     {
         $role = Role::find($id);
+
+        $this->logActivity('Consultation modification role', 'roles', $role->id);
         return view('dashboard.edit-role', compact('role'));
     }
     ///*** Sauvegarde role ***//
@@ -223,6 +223,7 @@ class DashboardController extends Controller
     {
         $mines = Minerai::with('siteMinier')->paginate(10);
         $sites = SiteMinier::all();
+        $this->logActivity('Consultation liste mines', 'minerais', $mines->first()?->id);
         return view('dashboard.mines', compact('mines', 'sites'));
     }
     /// Sauvegarde mine
@@ -254,6 +255,8 @@ class DashboardController extends Controller
     public function editMine($id)
     {
         $mine = Minerai::find($id);
+
+        $this->logActivity('Consultation modification mine', 'minerais', $mine->id);
         return view('dashboard.edit-mine', compact('mine'));
     }
     /// Sauvegarde mine
@@ -297,6 +300,8 @@ class DashboardController extends Controller
         $sites = SiteMinier::with('responsable')->paginate(10);
         $users = User::all();
         $concessions = Concession::all();
+
+        $this->logActivity('Consultation des sites', 'sites_miniers', $sites->first()->id);
         return view('dashboard.site', compact('sites', 'users', 'concessions'));
     }
     /// Sauvegarde site
@@ -314,7 +319,7 @@ class DashboardController extends Controller
 
         $code = 'SITE-' . \Illuminate\Support\Str::random(20);
 
-        SiteMinier::create([
+        $site = SiteMinier::create([
             'code' => $code,
             'nom' => $request->nom,
             'province' => $request->province,
@@ -325,6 +330,8 @@ class DashboardController extends Controller
             'responsable_id' => $request->responsable_id,
         ]);
 
+        $this->logActivity('Création site', 'sites_miniers', $site->id);
+
         return redirect()->route('dashboard.sites')->with('success', 'Site créé avec succès !');
     }
     /// Modification site
@@ -333,6 +340,8 @@ class DashboardController extends Controller
         $site = SiteMinier::find($id);
         $users = User::all();
         $concessions = Concession::all();
+
+        $this->logActivity('Consultation modification site', 'sites_miniers', $site->id);
         return view('dashboard.edit-site', compact('site', 'users', 'concessions'));
     }
     /// Sauvegarde site
@@ -359,13 +368,17 @@ class DashboardController extends Controller
             'responsable_id' => $request->responsable_id,
         ]);
 
+        $this->logActivity('Modification site', 'sites_miniers', $site->id);
+
         return redirect()->route('dashboard.sites')->with('success', 'Site mis à jour avec succès !');
     }
     /// Suppression site
     public function deleteSite($id)
     {
         $site = SiteMinier::find($id);
+        $siteId = $site->id;
         $site->delete();
+        $this->logActivity('Suppression site', 'sites_miniers', $siteId);
         return redirect()->route('dashboard.sites')->with('success', 'Site supprimé avec succès !');
     }
 
@@ -373,6 +386,8 @@ class DashboardController extends Controller
     public function concessions()
     {
         $concessions = Concession::all();
+        
+        $this->logActivity('Consultation concessions', 'concessions', $concessions->first()->id);
         return view('dashboard.concession', compact('concessions'));
     }
     /// Sauvegarde concession
@@ -387,7 +402,7 @@ class DashboardController extends Controller
 
         $code = 'CONC-' . \Illuminate\Support\Str::random(20);
 
-        Concession::create([
+        $concession = Concession::create([
             'code' => $code,
             'nom' => $request->nom,
             'numero_cadastre' => $request->numero_cadastre,
@@ -395,12 +410,15 @@ class DashboardController extends Controller
             'proprietaire' => $request->proprietaire,
         ]);
 
+        $this->logActivity('Création concession', 'concessions', $concession->id);
+
         return redirect()->route('dashboard.concessions')->with('success', 'Concession créée avec succès !');
     }
     /// Modification concession
     public function editConcession($id)
     {
         $concession = Concession::find($id);
+        $this->logActivity('Consultation modification concession', 'concessions', $concession->id);
         return view('dashboard.edit-concession', compact('concession'));
     }
     /// Sauvegarde concession
@@ -421,13 +439,17 @@ class DashboardController extends Controller
             'proprietaire' => $request->proprietaire,
         ]);
 
+        $this->logActivity('Modification concession', 'concessions', $concession->id);
+
         return redirect()->route('dashboard.concessions')->with('success', 'Concession mise à jour avec succès !');
     }
     /// Suppression concession
     public function deleteConcession($id)
     {
         $concession = Concession::find($id);
+        $concessionId = $concession->id;
         $concession->delete();
+        $this->logActivity('Suppression concession', 'concessions', $concessionId);
         return redirect()->route('dashboard.concessions')->with('success', 'Concession supprimée avec succès !');
     }
 }

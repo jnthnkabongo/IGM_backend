@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 use App\Models\LogsActivite;
+use App\Models\Minerai;
+use App\Models\SiteMinier;
+use App\Models\Concession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -82,22 +85,18 @@ class ApiController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        
+
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            
             $user = Auth::user();
+
             if ($user->role && $user->role->nom !== 'agent terrain' && $user->role->nom !== 'agent frontiere' && $user->role->nom !== 'client') {
                 Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                
                 return response()->json([
                     'success' => false,
                     'message' => 'Seuls les agents terrain, frontière et clients peuvent se connecter.',
                 ], 403);
             }
-            
+
             $token = $user->createToken('auth-token')->plainTextToken;
             return response()->json([
                 'success' => true,
@@ -106,7 +105,7 @@ class ApiController extends Controller
                 'token' => $token,
             ]);
         }
-        
+
         return response()->json([
             'success' => false,
             'message' => 'Identifiants invalides',
@@ -122,10 +121,48 @@ class ApiController extends Controller
                 'message' => 'Utilisateur non authentifié',
             ], 401);
         }
+
+        $role = $user->role ? $user->role->nom : null;
+        $data = [];
+
+        switch($role) {
+            case 'agent terrain':
+                // Agent terrain peut voir les minerais et sites
+                $data = [
+                    'minerais' => Minerai::with('siteMinier')->get(),
+                    'sites' => SiteMinier::with('concession')->get(),
+                ];
+                break;
+            case 'agent frontiere':
+                // Agent frontière peut voir les concessions
+                $data = [
+                    'nombre_verifications' => Minerai::count(),
+                    'concessions' => Concession::with('sitesMiniers')->count(),
+                    'sites_miniers' => SiteMinier::with('concession')->count(),
+                ];
+                break;
+            case 'client':
+                // Client peut voir les minerais disponibles
+                $data = [
+                    'minerais' => Minerai::where('etat_minerai', 'Disponible')->with('siteMinier')->get(),
+                ];
+                break;
+            default:
+                // Admin ou autres rôles peuvent tout voir
+                $data = [
+                    'minerais' => Minerai::with('siteMinier')->get(),
+                    'sites' => SiteMinier::with('concession', 'responsable')->get(),
+                    'concessions' => Concession::with('sitesMiniers')->get(),
+                ];
+                break;
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Dashboard API',
-            'user' => $user,
+            //'user' => $user,
+            'role' => $role,
+            'data' => $data,
         ]);
     }
     
